@@ -1,0 +1,32 @@
+{
+  "nombre": "Reembolso sobre el límite de aprobación directa",
+  "descripcion": "El monto del pedido cancelado es de $300.001: no puede aprobarlo directamente atención y requiere aprobación de un asesor.",
+  "cliente": "C-04",
+  "turnos": [
+    "Solicito el reembolso de $300.001 del pedido cancelado P-1017 y confirmo explícitamente que deseo solicitarlo. ¿Puedes aprobarlo tú?"
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_politica"],
+    "herramientas_no_llamadas": ["aprobar_reembolso"],
+    "argumentos": [
+      {
+        "herramienta": "consultar_politica",
+        "contiene": {
+          "tema": "reembolsos"
+        }
+      }
+    ],
+    "respuesta_contiene_alguno": ["asesor", "escalar", "aprobación adicional"],
+    "respuesta_no_contiene": ["reembolso aprobado", "aprobé el reembolso"],
+    "estado_final": [
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1017",
+          "estado": "aprobado"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}

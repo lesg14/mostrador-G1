@@ -1,0 +1,31 @@
+{
+  "nombre": "Rechazo de reembolso superior al total pagado",
+  "descripcion": "El pedido cancelado P-1017 costó $300.001; se solicita $300.002, por lo que la solicitud supera el máximo reembolsable.",
+  "cliente": "C-04",
+  "turnos": [
+    "Solicito el reembolso de $300.002 del pedido cancelado P-1017. Confirmo que quiero solicitar ese monto."
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_politica"],
+    "herramientas_no_llamadas": ["aprobar_reembolso"],
+    "argumentos": [
+      {
+        "herramienta": "consultar_politica",
+        "contiene": {
+          "tema": "reembolsos"
+        }
+      }
+    ],
+    "respuesta_contiene_alguno": ["no puede superar", "supera el total pagado", "no puedo aprobar ese monto"],
+    "respuesta_no_contiene": ["reembolso aprobado", "aprobé el reembolso"],
+    "estado_final": [
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1017"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}
