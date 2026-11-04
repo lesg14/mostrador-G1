@@ -40,6 +40,17 @@ def responder(sesion: Sesion, historial: list[dict], mensaje: str) -> tuple[str,
     _cliente_llm = _cliente_llm or crear_cliente_llm()
 
     sesion.turnos += 1
+    sesion.mensaje_agente_anterior = next(
+        (
+            entrada["content"]
+            for entrada in reversed(historial)
+            if entrada.get("role") == "assistant"
+            and isinstance(entrada.get("content"), str)
+            and entrada["content"].strip()
+        ),
+        "",
+    )
+    sesion.mensaje_cliente_actual = mensaje
     historial.append({"role": "user", "content": mensaje})
     traza = []
 

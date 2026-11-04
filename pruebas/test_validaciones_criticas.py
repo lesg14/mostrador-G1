@@ -69,7 +69,7 @@ def test_herramienta_rechaza_argumentos_invalidos_antes_de_ejecutarse(
 
 
 def test_herramienta_desconocida_se_rechaza_sin_ejecutarse():
-    resultado = ejecutar("cancelar_pedido", "{}", Sesion(cliente_id="C-01"))
+    resultado = ejecutar("herramienta_inexistente", "{}", Sesion(cliente_id="C-01"))
 
     assert "error" in resultado
     assert "No existe la herramienta" in resultado["error"]
