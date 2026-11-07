@@ -35,6 +35,15 @@ Los secretos nunca van en el código ni en un archivo del repositorio. Si los es
 
 Si creaste el codespace antes de agregar los secretos, reinícialo para que los tome: en la pestaña **Codespaces** del repositorio, abre el menú del codespace (los tres puntos) y elige **Stop codespace**; luego vuelve a abrirlo.
 
+Para ejecutar el proyecto en un entorno local también puedes completar el archivo `.env` ignorado por Git que está en la raíz del proyecto:
+
+```
+LLM_API_KEY=tu-credencial
+LLM_BASE_URL=https://clase-agente.danidev.co/v1
+```
+
+No compartas ni subas ese archivo. La aplicación lo carga automáticamente al iniciar, y nunca debes imprimir el valor de `LLM_API_KEY`.
+
 Para comprobar que quedaron bien, escribe en la terminal:
 
 ```

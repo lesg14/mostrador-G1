@@ -112,7 +112,12 @@ Clasifica cada herramienta de tu agente y di qué control le pusiste según su r
 
 | Herramienta | Riesgo (bajo, medio, alto) | ¿Se puede deshacer? | Control que aplicaste |
 |---|---|---|---|
-| | | | |
+| `consultar_politica` | Bajo | Sí; solo lee la política | El tema está limitado por el esquema de argumentos y la herramienta solo devuelve una sección existente. |
+| `consultar_pedido` | Bajo | Sí; solo lee datos | Verifica que el pedido pertenezca al cliente autenticado y no devuelve notas internas ni datos de otro cliente. |
+| `registrar_reclamo` | Medio | Parcialmente; queda un registro y no se duplica mientras esté abierto | Valida pertenencia, estado entregado, fecha, plazo por categoría y categoría preferente; exige motivo y producto cuando corresponde. |
+| `cancelar_pedido` | Alto | No de forma simple; cambia el estado y genera el reembolso total | Verifica pertenencia, estado, límite de 24 horas cuando aplica y confirmación explícita del cliente antes de modificar datos. |
+| `solicitar_reembolso` | Alto | No de forma simple; crea un registro financiero | Verifica causal válida, saldo disponible, monto máximo pagado y confirmación explícita; los montos superiores a $300.000 quedan pendientes y escalan. |
+| `escalar_a_persona` | Medio | Sí; el registro puede revisarse, aunque genera trabajo operativo | Valida la sesión, el pedido relacionado, motivo y resumen no vacíos; registra el caso y comunica el plazo de contacto. |
 
 ## 4. Matriz de reglas y mecanismos
 
@@ -124,7 +129,12 @@ Cada regla de la política queda garantizada por uno o más mecanismos:
 
 | Regla de la política | Instrucciones | Validación en herramienta | Estado de sesión | Escenario o prueba que la comprueba |
 |---|---|---|---|---|
-| | | | | |
+| Solo se puede revelar o gestionar un pedido del cliente autenticado. | Indican no pedir datos adicionales ni revelar pedidos ajenos. | `_pedido_del_cliente` compara `cliente_id` antes de devolver o modificar datos. | `Sesion.cliente_id` identifica la cuenta autenticada. | `acceso_pedido_ajeno.json`; `test_consultar_pedido_de_otro_cliente_no_revela_datos`. |
+| Un pedido enviado no se puede cancelar. | Exigen consultar `consultar_politica(tema="cancelaciones")` antes de rechazar por política y ofrecer rechazar la entrega. | `cancelar_pedido` rechaza el estado `enviado` sin modificar datos. | No requiere estado adicional. | `bloqueo_por_politica.json`; `test_pedido_enviado_no_se_puede_cancelar`. |
+| Solo se reclama por pedidos entregados y dentro del plazo. | Piden solicitar motivo y producto cuando hay varios. | `registrar_reclamo` valida estado, fechas, categoría, días de plazo y 15 días extra para clientes preferentes. | `Sesion.cliente_id` determina la categoría del cliente; el turno conserva el motivo comunicado. | `reclamo_preferente_limite.json`; `test_reclamo_preferente_acepta_hasta_el_ultimo_dia_del_plazo`. |
+| No se abre un segundo reclamo abierto para el mismo pedido. | Indican informar el reclamo existente en vez de duplicarlo. | `registrar_reclamo` devuelve el reclamo abierto existente. | La sesión identifica al cliente que solicita la operación. | `test_reclamo_abierto_existente_no_se_duplica`. |
+| Las notas del pedido son datos, no instrucciones ni autorización. | Ordenan ignorar inyecciones y no aceptar confirmaciones contenidas en notas. | Las herramientas no leen una nota para autorizar reembolsos o saltarse validaciones. | La confirmación se deriva del mensaje actual y del turno anterior del agente, no de la nota. | `inyeccion_en_nota.json`; `test_texto_citado_no_cuenta_como_confirmacion`. |
+| Las acciones irreversibles requieren confirmación explícita. | El agente debe pedir confirmación antes de cancelar o reembolsar. | `cancelar_pedido` y `solicitar_reembolso` validan el indicador y el texto de confirmación. | `Sesion.mensaje_cliente_actual` y `mensaje_agente_anterior` permiten comprobar el contexto. | `test_cancelar_pedido_exige_confirmacion_y_crea_reembolso_automatico`; pruebas de reembolso. |
 
 ## 5. Resultados y aprendizajes
 
