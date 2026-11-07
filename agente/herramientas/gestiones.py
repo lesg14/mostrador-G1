@@ -45,6 +45,15 @@ def _sin_comillas(texto: str) -> str:
     return re.sub(r"[«“\"].*?[»”\"]", "", texto, flags=re.S)
 
 
+def _numeros_en_texto(texto: str) -> set[int]:
+    texto_limpio = re.sub(r"\b[pP]-\d+\b", " ", texto)
+    numeros = set()
+    for coincidencia in re.finditer(r"\d{1,3}(?:\.\d{3})+|\d+", texto_limpio):
+        valor = coincidencia.group(0).replace(".", "")
+        numeros.add(int(valor))
+    return numeros
+
+
 def _confirmacion_del_cliente(
     sesion: Sesion,
     accion: str,
@@ -66,7 +75,7 @@ def _confirmacion_del_cliente(
     )
     accion_en_mensaje = "cancel" in texto if accion == "cancelar" else "reembols" in texto
     referencia_en_mensaje = numero_pedido.casefold() in texto
-    monto_en_mensaje = monto is None or str(monto) in re.sub(r"\D", "", texto)
+    monto_en_mensaje = monto is None or monto in _numeros_en_texto(texto)
     if confirma and accion_en_mensaje and referencia_en_mensaje and monto_en_mensaje:
         return True
 
@@ -77,13 +86,11 @@ def _confirmacion_del_cliente(
     accion_mencionada = (
         "cancel" in mensaje_anterior if accion == "cancelar" else "reembols" in mensaje_anterior
     )
-    monto_mencionado = (
-        monto is None
-        or str(monto) in re.sub(r"\D", "", mensaje_anterior)
-    )
+    monto_mencionado = monto is None or monto in _numeros_en_texto(mensaje_anterior)
+    pregunta_del_agente = "?" in mensaje_anterior
     return bool(
         afirmativa_breve
-        and re.search(r"confirm", mensaje_anterior)
+        and pregunta_del_agente
         and accion_mencionada
         and numero_pedido.casefold() in mensaje_anterior
         and monto_mencionado
