@@ -1,0 +1,29 @@
+{
+  "nombre": "Consulta normal sobre plazo de reclamo",
+  "descripcion": "Consulta una regla de política válida y comprueba que el agente responde a partir de la política.",
+  "cliente": "C-01",
+  "turnos": [
+    "¿Cuántos días tengo para reclamar si unos audífonos electrónicos salen defectuosos?"
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_politica"],
+    "argumentos": [
+      {
+        "herramienta": "consultar_politica",
+        "contiene": {
+          "tema": "reclamos"
+        }
+      }
+    ],
+    "respuesta_contiene": ["90 días"],
+    "estado_final": [
+      {
+        "archivo": "reclamos",
+        "donde": {
+          "numero_pedido": "P-1002"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}

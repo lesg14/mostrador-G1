@@ -31,3 +31,5 @@ class Sesion:
     turnos: int = 0
     tokens_entrada: int = 0
     tokens_salida: int = 0
+    mensaje_cliente_actual: str = ""
+    mensaje_agente_anterior: str = ""

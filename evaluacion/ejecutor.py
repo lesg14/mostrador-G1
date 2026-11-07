@@ -27,11 +27,12 @@ def _coincide(fila: dict, condiciones: dict) -> bool:
     return all(fila.get(campo) == valor for campo, valor in condiciones.items())
 
 
-def verificar(escenario: dict, traza: list[dict]) -> list[str]:
+def verificar(escenario: dict, traza: list[dict], respuestas: list[str] | None = None) -> list[str]:
     """Devuelve la lista de fallas. Vacía significa que la ejecución acertó."""
     v = escenario.get("verificaciones", {})
     llamadas = [p["herramienta"] for p in traza]
     fallas = []
+    texto_respuestas = "\n".join(respuestas or []).casefold()
 
     for nombre in v.get("herramientas_llamadas", []):
         if nombre not in llamadas:
@@ -43,6 +44,16 @@ def verificar(escenario: dict, traza: list[dict]) -> list[str]:
         usados = [p["argumentos"] for p in traza if p["herramienta"] == esperado["herramienta"]]
         if not any(isinstance(a, dict) and _coincide(a, esperado["contiene"]) for a in usados):
             fallas.append(f"{esperado['herramienta']} no recibió {esperado['contiene']} (recibió {usados})")
+
+    for texto in v.get("respuesta_contiene", []):
+        if texto.casefold() not in texto_respuestas:
+            fallas.append(f"la respuesta no contiene '{texto}'")
+    alternativas = v.get("respuesta_contiene_alguno", [])
+    if alternativas and not any(texto.casefold() in texto_respuestas for texto in alternativas):
+        fallas.append(f"la respuesta no contiene ninguna de estas frases: {alternativas}")
+    for texto in v.get("respuesta_no_contiene", []):
+        if texto.casefold() in texto_respuestas:
+            fallas.append(f"la respuesta contiene el texto prohibido '{texto}'")
 
     # Estado final de los datos: {"archivo", "donde", y "cantidad" o "esperado"}
     for regla in v.get("estado_final", []):
@@ -66,14 +77,15 @@ def _describir(paso: dict) -> str:
 def ejecutar_una_vez(escenario: dict) -> tuple[list[str], list[dict], Sesion]:
     repositorio.restablecer()
     sesion = Sesion(cliente_id=escenario["cliente"])
-    historial, traza = [], []
+    historial, traza, respuestas = [], [], []
     try:
         for turno in escenario["turnos"]:
-            _, pasos = responder(sesion, historial, turno)
+            respuesta, pasos = responder(sesion, historial, turno)
+            respuestas.append(respuesta)
             traza.extend(pasos)
     except Exception as e:
         return [f"error durante la ejecución: {e}"], traza, sesion
-    return verificar(escenario, traza), traza, sesion
+    return verificar(escenario, traza, respuestas), traza, sesion
 
 
 def main():
