@@ -141,6 +141,36 @@ def test_pedido_en_preparacion_del_dia_actual_se_puede_cancelar():
 
     assert resultado["cancelado"] is True
     assert resultado["reembolso"]["monto"] == 420000
+    assert resultado["reembolso"]["estado"] == "solicitado"
+    assert resultado["requiere_asesor"] is True
+
+
+def test_cancelacion_de_pedido_sobre_el_tope_no_aprueba_el_reembolso_y_escala():
+    resultado = _ejecutar(
+        "cancelar_pedido",
+        {"numero_pedido": "P-1013", "confirmacion_explicita": True},
+        cliente="C-05",
+        mensaje="Confirmo que deseo cancelar el pedido P-1013.",
+    )
+
+    assert resultado["cancelado"] is True
+    assert resultado["reembolso"]["monto"] == 2300000
+    assert resultado["reembolso"]["estado"] == "solicitado"
+    assert repositorio.leer_reembolsos()[0].estado == "solicitado"
+    assert repositorio.leer_escalamientos()[0].numero_pedido == "P-1013"
+    assert resultado["escalamiento_id"] == repositorio.leer_escalamientos()[0].id
+    assert resultado["requiere_asesor"] is True
+
+
+def test_cancelacion_dentro_del_tope_no_crea_escalamiento():
+    resultado = _ejecutar(
+        "cancelar_pedido",
+        {"numero_pedido": "P-1001", "confirmacion_explicita": True},
+        mensaje="Confirmo explícitamente que deseo cancelar el pedido P-1001.",
+    )
+
+    assert resultado["reembolso"]["estado"] == "aprobado"
+    assert repositorio.leer_escalamientos() == []
 
 
 def test_pedido_en_preparacion_con_plazo_vencido_no_cambia():

@@ -288,6 +288,7 @@ def cancelar_pedido(sesion: Sesion, args: ArgsCancelarPedido) -> dict:
     reembolsos = repositorio.leer_reembolsos()
     if _reembolsos_del_pedido(pedido, reembolsos):
         raise ErrorDeHerramienta("El pedido ya tiene un reembolso registrado; requiere revisión.")
+    estado = "aprobado" if pedido.total <= LIMITE_APROBACION_DIRECTA else "solicitado"
     reembolso = repositorio.Reembolso(
         id=_siguiente_id("RE", reembolsos),
         numero_pedido=pedido.numero,
@@ -295,13 +296,13 @@ def cancelar_pedido(sesion: Sesion, args: ArgsCancelarPedido) -> dict:
         fecha=repositorio.HOY,
         monto=pedido.total,
         motivo="Reembolso automático por cancelación confirmada",
-        estado="aprobado",
+        estado=estado,
     )
     reembolsos.append(reembolso)
 
     repositorio.guardar_reembolsos(reembolsos)
     repositorio.guardar_pedidos(pedidos)
-    return {
+    resultado = {
         "cancelado": True,
         "numero_pedido": pedido.numero,
         "estado": "cancelado",
@@ -312,6 +313,17 @@ def cancelar_pedido(sesion: Sesion, args: ArgsCancelarPedido) -> dict:
             "medio": "medio de pago original",
         },
     }
+    if estado == "solicitado":
+        escalamiento = _crear_escalamiento(
+            sesion,
+            "Aprobación de reembolso superior a $300.000 por cancelación",
+            f"Pedido {pedido.numero} cancelado a solicitud del cliente; el reembolso total de "
+            f"{pedido.total} pesos requiere aprobación de un asesor.",
+            pedido.numero,
+        )
+        resultado["escalamiento_id"] = escalamiento.id
+        resultado["requiere_asesor"] = True
+    return resultado
 
 
 class ArgsSolicitarReembolso(BaseModel):
