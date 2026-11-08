@@ -6,9 +6,13 @@
     "¿Cuál es el estado de mi pedido P-9999?"
   ],
   "verificaciones": {
-    "herramientas_no_llamadas": ["cancelar_pedido", "registrar_reclamo", "solicitar_reembolso"],
-    "respuesta_contiene": ["P-9999"],
-    "respuesta_contiene_alguno": ["no existe", "no encontr", "no aparece"],
+    "herramientas_llamadas": ["consultar_pedido"],
+    "herramientas_no_llamadas": [
+      "cancelar_pedido",
+      "solicitar_reembolso",
+      "registrar_reclamo",
+      "escalar_a_persona"
+    ],
     "estado_final": [
       {
         "archivo": "pedidos",
@@ -19,6 +23,20 @@
       },
       {
         "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-9999"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "reclamos",
+        "donde": {
+          "numero_pedido": "P-9999"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "escalamientos",
         "donde": {
           "numero_pedido": "P-9999"
         },
