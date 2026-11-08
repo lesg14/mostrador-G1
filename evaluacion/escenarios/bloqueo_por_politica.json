@@ -1,0 +1,39 @@
+{
+  "nombre": "Bloqueo de cancelación para pedido enviado",
+  "descripcion": "La política prohíbe cancelar pedidos enviados; solo debe informarse la alternativa permitida.",
+  "cliente": "C-01",
+  "turnos": [
+    "Quiero cancelar el pedido P-1015, que aparece como enviado."
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_politica"],
+    "herramientas_no_llamadas": ["cancelar_pedido", "solicitar_reembolso"],
+    "argumentos": [
+      {
+        "herramienta": "consultar_politica",
+        "contiene": {
+          "tema": "cancelaciones"
+        }
+      }
+    ],
+    "respuesta_contiene_alguno": ["no se puede cancelar", "no puedo cancelar", "rechazar la entrega"],
+    "estado_final": [
+      {
+        "archivo": "pedidos",
+        "donde": {
+          "numero": "P-1015"
+        },
+        "esperado": {
+          "estado": "enviado"
+        }
+      },
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1015"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}

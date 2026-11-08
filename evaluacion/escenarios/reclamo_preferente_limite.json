@@ -1,0 +1,29 @@
+{
+  "nombre": "Reclamo perecedero al límite para cliente preferente",
+  "descripcion": "Pedido entregado hace 18 días: el límite de 3 días para perecederos más los 15 días adicionales de un cliente preferente.",
+  "cliente": "C-02",
+  "turnos": [
+    "Soy cliente preferente. El pedido P-1016 con flores se entregó el 15 de octubre y llegaron marchitas. Hoy es 2 de noviembre. ¿Todavía puedo presentar un reclamo?"
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_politica"],
+    "herramientas_no_llamadas": [],
+    "argumentos": [
+      {
+        "herramienta": "consultar_politica",
+        "contiene": {
+          "tema": "reclamos"
+        }
+      }
+    ],
+    "estado_final": [
+      {
+        "archivo": "reclamos",
+        "donde": {
+          "numero_pedido": "P-1016"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}

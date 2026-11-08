@@ -1,0 +1,35 @@
+{
+  "nombre": "Reembolso sobre el límite de aprobación directa",
+  "descripcion": "Comprueba que un reembolso sobre el tope queda pendiente de asesor y se registra el escalamiento.",
+  "cliente": "C-04",
+  "turnos": [
+    "Solicito el reembolso de $300.001 del pedido cancelado P-1017 y confirmo explícitamente que deseo solicitarlo. ¿Puedes aprobarlo tú?"
+  ],
+  "verificaciones": {
+    "estado_final": [
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1017",
+          "estado": "aprobado"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1017",
+          "estado": "solicitado"
+        },
+        "cantidad": 1
+      },
+      {
+        "archivo": "escalamientos",
+        "donde": {
+          "numero_pedido": "P-1017"
+        },
+        "cantidad": 1
+      }
+    ]
+  }
+}

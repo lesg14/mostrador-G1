@@ -1,0 +1,47 @@
+{
+  "nombre": "Consulta de pedido inexistente",
+  "descripcion": "El número consultado no está en los datos; el agente no debe inventar ni cambiar información del pedido.",
+  "cliente": "C-01",
+  "turnos": [
+    "¿Cuál es el estado de mi pedido P-9999?"
+  ],
+  "verificaciones": {
+    "herramientas_llamadas": ["consultar_pedido"],
+    "herramientas_no_llamadas": [
+      "cancelar_pedido",
+      "solicitar_reembolso",
+      "registrar_reclamo",
+      "escalar_a_persona"
+    ],
+    "estado_final": [
+      {
+        "archivo": "pedidos",
+        "donde": {
+          "numero": "P-9999"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-9999"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "reclamos",
+        "donde": {
+          "numero_pedido": "P-9999"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "escalamientos",
+        "donde": {
+          "numero_pedido": "P-9999"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}

@@ -2,10 +2,12 @@
 import os
 from dataclasses import dataclass
 
+from dotenv import load_dotenv
 from openai import OpenAI
 
 # Alias del modelo en el intermediario. No depende del proveedor que haya detrás.
 MODELO = "modelo-clase"
+load_dotenv()
 
 
 def crear_cliente_llm() -> OpenAI:
@@ -31,3 +33,5 @@ class Sesion:
     turnos: int = 0
     tokens_entrada: int = 0
     tokens_salida: int = 0
+    mensaje_cliente_actual: str = ""
+    mensaje_agente_anterior: str = ""

@@ -1,0 +1,28 @@
+{
+  "nombre": "Rechazo de reembolso superior al total pagado",
+  "descripcion": "Comprueba que un monto mayor al total pagado de P-1017 no genera ningún reembolso.",
+  "cliente": "C-04",
+  "turnos": [
+    "Solicito el reembolso de $300.002 del pedido cancelado P-1017. Confirmo que quiero solicitar ese monto."
+  ],
+  "verificaciones": {
+    "estado_final": [
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1017"
+        },
+        "cantidad": 0
+      },
+      {
+        "archivo": "pedidos",
+        "donde": {
+          "numero": "P-1017"
+        },
+        "esperado": {
+          "estado": "cancelado"
+        }
+      }
+    ]
+  }
+}

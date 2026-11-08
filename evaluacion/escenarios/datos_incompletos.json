@@ -1,0 +1,31 @@
+{
+  "nombre": "Solicitud de cancelación con datos incompletos",
+  "descripcion": "El cliente no identifica el pedido ni confirma explícitamente la cancelación; el agente debe pedir aclaración y no ejecutar cambios.",
+  "cliente": "C-01",
+  "turnos": [
+    "Quiero cancelar mi pedido."
+  ],
+  "verificaciones": {
+    "herramientas_no_llamadas": ["cancelar_pedido", "solicitar_reembolso"],
+    "respuesta_contiene": ["pedido"],
+    "respuesta_contiene_alguno": ["número", "cuál", "identificar"],
+    "estado_final": [
+      {
+        "archivo": "pedidos",
+        "donde": {
+          "numero": "P-1001"
+        },
+        "esperado": {
+          "estado": "pagado"
+        }
+      },
+      {
+        "archivo": "reembolsos",
+        "donde": {
+          "numero_pedido": "P-1001"
+        },
+        "cantidad": 0
+      }
+    ]
+  }
+}
